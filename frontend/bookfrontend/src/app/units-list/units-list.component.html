@@ -1,0 +1,48 @@
+<div class="list row">
+  <p>{{ retrieveUnits() }}</p>
+    <div class="col-md-8">
+      <div class="input-group mb-3">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search by title"
+          [(ngModel)]="title"
+        />
+        
+        <div class="input-group-append">
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            (click)="searchTitle()"
+          >
+            Search
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <h4>UnitsList</h4>
+      
+      <ul class="list-group">
+        @for (ut of units; track ut.id; let i = $index) {
+        <li
+          class="list-group-item"
+          [class.active]="i == currentIndex"
+          (click)="setActiveUnit(ut, i)"
+        >
+          {{ ut.title }}
+        </li>
+        }
+      </ul>
+  
+      <button class="m-3 btn btn-sm btn-danger" (click)="removeAllUnits()">
+        Remove All
+      </button>
+    </div>
+    
+    <div class="col-md-6">
+      <app-unit-details></app-unit-details>
+    </div>
+  
+
+  </div>
