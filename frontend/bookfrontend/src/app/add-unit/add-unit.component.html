@@ -1,38 +1,35 @@
-<p>add</p>
 
-<!--
-<div>
-    <div class="submit-form">
-      @if (!submitted) {
-      <div class="form-group">
-        <label for="title">Title</label>
-        <input
-          type="text"
-          class="form-control"
-          id="title"
-          required
-          [(ngModel)]="unit.title"
-          name="title"
-        />
-      </div>
-  
-      <div class="form-group">
-        <label for="description">Description</label>
-        <input
-          class="form-control"
-          id="description"
-          required
-          [(ngModel)]="unit.description"
-          name="description"
-        />
-      </div>
-  
-      <button (click)="saveUnit()" class="btn btn-success">Submit</button>
-      } @else {
-      <h4>Unit was submitted successfully!</h4>
-      <button class="btn btn-success" (click)="newUnit()">Add</button>
-      }
-    </div>
-  </div>
+<form [formGroup]="unitForm" class="unit-form">
+  <mat-form-field appearance="fill">
+    <mat-label>Title</mat-label>
+    <input matInput id ="title" formControlName="title" placeholder="Enter title" required>
+    <mat-error *ngIf="unitForm.get('title')?.hasError('required')">
+      Title is required
+    </mat-error>
+  </mat-form-field>
 
--->
+  <mat-form-field appearance="fill">
+    <mat-label>Description</mat-label>
+    <input matInput id ="description" formControlName="description" placeholder="Enter description" required>
+    <mat-error *ngIf="unitForm.get('description')?.hasError('required')">
+      Description is required
+    </mat-error>
+  </mat-form-field>
+
+  
+  
+  
+
+  <mat-form-field appearance="fill">
+    <mat-label>Taught</mat-label>
+    <mat-select id="taught" formControlName="taught" placeholder="Enter taught" required>
+      <mat-option [value]="true">Yes</mat-option>
+      <mat-option [value]="false">No</mat-option>
+    </mat-select>
+    <mat-error *ngIf="unitForm.get('taught')?.hasError('required')">
+      Taught is required
+    </mat-error>
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" type="submit" (click)="onSubmit()">Add Unit</button>
+</form>

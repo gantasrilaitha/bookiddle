@@ -5,122 +5,62 @@ import { FormsModule, NgModel } from '@angular/forms';
 import { UnitDetailsComponent } from '../unit-details/unit-details.component';
 import { UnitService } from '../services/unit.service';
 import { HttpClient } from '@angular/common/http';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-units-list',
   standalone: true,
-  imports:[UnitDetailsComponent,FormsModule],
+  imports:[MatFormFieldModule, MatInputModule, MatTableModule,MatDividerModule, MatIconModule,MatButtonModule],
   templateUrl:'./units-list.component.html' ,
   styleUrl: './units-list.component.scss'
 })
 
 export class  UnitsListComponent{
-  units?: SyllabusUnit[];
-  currentUnit: SyllabusUnit = {};
-  currentIndex = -1;
-  title = '';
-  constructor(private unitService: UnitService) {
+  displayedColumns: string[] = ['id', 'title', 'description', 'taught','action'];
+  units ?: SyllabusUnit[];
+  dataSource!: MatTableDataSource<SyllabusUnit>;
 
-  }
-  retrieveUnits(): void {
-    this.unitService.getAll().subscribe({
-      next: (data) => {
+  constructor(private unitService: UnitService,
+    private router: Router,
+  ) {}
+
+  ngOnInit(){
+    this.unitService.getAllUnits().subscribe(
+      (data:SyllabusUnit[]) => {
         this.units = data;
+        this.dataSource = new MatTableDataSource(this.units);
         console.log(data);
+      }
+    );
+  }
+
+  
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  navigateToUpdateUnits(unit:SyllabusUnit ) {
+    this.router.navigate(['/update-unit',unit.id]);
+  }
+
+  DeleteUnit(id: number): void {
+    this.unitService.deleteUnitById(id).subscribe(
+      (response) => {
+        this.ngOnInit();
+        this.router.navigate(['/all-units']); // Navigate back to the list
       },
-      error: (e) => console.error(e)
-    });
+      (error) => {
+        console.error('Error deleting unit:', error);
+        // Handle error (e.g., display an error message)
+      }
+  )
   }
 
-  refreshList(): void {
-    this.retrieveUnits();
-    this.currentUnit = {};
-    this.currentIndex = -1;
-  }
-
-  setActiveUnit(unit: SyllabusUnit, index: number): void {
-    this.currentUnit = unit;
-    this.currentIndex = index;
-  }
-
-  removeAllUnits(): void {
-    this.unitService.deleteAll().subscribe({
-      next: (res) => {
-        console.log(res);
-        this.refreshList();
-      },
-      error: (e) => console.error(e)
-    });
-  }
-
-  searchTitle(): void {
-    this.currentUnit = {};
-    this.currentIndex = -1;
-
-    this.unitService.findByTitle(this.title).subscribe({
-      next: (data) => {
-        this.units = data;
-        console.log(data);
-      },
-      error: (e) => console.error(e)
-    });
-  }
 }
-/*
-export class UnitsListComponent implements OnInit {
-  units?: SyllabusUnit[];
-  currentUnit: SyllabusUnit = {};
-  currentIndex = -1;
-  title = '';
-
-  constructor(private unitService: UnitService) {}
-
-  ngOnInit(): void {
-    this.retrieveUnits();
-  }
-
-  retrieveUnits(): void {
-    this.unitService.getAll().subscribe({
-      next: (data) => {
-        this.units = data;
-        console.log(data);
-      },
-      error: (e) => console.error(e)
-    });
-  }
-
-  refreshList(): void {
-    this.retrieveUnits();
-    this.currentUnit = {};
-    this.currentIndex = -1;
-  }
-
-  setActiveUnit(unit: SyllabusUnit, index: number): void {
-    this.currentUnit = unit;
-    this.currentIndex = index;
-  }
-
-  removeAllUnits(): void {
-    this.unitService.deleteAll().subscribe({
-      next: (res) => {
-        console.log(res);
-        this.refreshList();
-      },
-      error: (e) => console.error(e)
-    });
-  }
-
-  searchTitle(): void {
-    this.currentUnit = {};
-    this.currentIndex = -1;
-
-    this.unitService.findByTitle(this.title).subscribe({
-      next: (data) => {
-        this.units = data;
-        console.log(data);
-      },
-      error: (e) => console.error(e)
-    });
-  }
-}
-*/

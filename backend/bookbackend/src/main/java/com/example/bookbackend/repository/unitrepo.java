@@ -1,13 +1,13 @@
 package com.example.bookbackend.repository;
 
-import java.util.List;
+import java.util.*;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.bookbackend.model.SyllabusUnit;
 
-public interface unitrepo extends JpaRepository<SyllabusUnit, Long> {
+public interface unitrepo extends JpaRepository<SyllabusUnit,Integer> {
     List<SyllabusUnit> findByTaught(boolean ptaught);
 
-    List<SyllabusUnit> findByTitle(String title);
+    Optional<SyllabusUnit> findByTitle(String title);
 }

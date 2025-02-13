@@ -1,4 +1,34 @@
-.spacer {
-    flex: 1 1 auto;
-  }
-  
+
+.my-unit-valet {
+  text-align: center;
+  margin-top: 50px;
+  font-family: 'Courier New', Courier, monospace;
+  color: #5d40db;
+  background-color: lightgoldenrodyellow;
+}
+
+#button {
+  margin-top: 20px;
+  padding: 12px 24px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 18px;
+  width: 220px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+#button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+}
+
+#button:active {
+  background-color: #3e8e41;
+  transform: translateY(0);
+}

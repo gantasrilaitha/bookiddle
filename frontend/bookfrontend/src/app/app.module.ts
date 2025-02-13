@@ -1,30 +1,38 @@
-// import { ModuleWithProviders, NgModule } from '@angular/core';
-// import { BrowserModule } from '@angular/platform-browser';
-// import { HttpClient } from '@angular/common/http';
+import { ModuleWithProviders, NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { HttpClient } from '@angular/common/http';
 
-// import { routes} from './app.routes.ts';
-// import { AppComponent } from './app.component';
-// import { HeaderComponent } from './header/header.component';
-// import { FormsModule } from '@angular/forms';
-// const formModuleConfig: ModuleWithProviders<FormsModule> = FormsModule.withConfig({
-//   // Optional: Use this to customize the form behavior
-//   //updateOn: 'blur', // Change the update behavior to 'blur'
-// });
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-// @NgModule({
-//   declarations: [
-//     AppComponent,
-//     //formModuleConfig,
-//     //HeaderComponent,
-//   ],
-//   imports: [
-//     BrowserModule,
-//     routes,
-//     FormsModule,
-//     HttpClient,
-//     formModuleConfig,
-//   ],
-//   providers: [],
-//   bootstrap: [AppComponent]
-// })
-// export class AppModule { }
+
+import { routes} from './app.routes';
+import { AppComponent } from './app.component';
+import { HeaderComponent } from './header/header.component';
+import { FormsModule } from '@angular/forms';
+import { AddUnitComponent } from './add-unit/add-unit.component';
+
+import { ReactiveFormsModule } from '@angular/forms';
+
+
+
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    AddUnitComponent,
+    HeaderComponent,
+  ],
+  imports: [
+    BrowserModule,
+    routes,
+    FormsModule,
+    HttpClient,
+    
+    BrowserAnimationsModule,
+    ReactiveFormsModule,
+  
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }

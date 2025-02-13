@@ -1,30 +1,28 @@
 package com.example.bookbackend.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
-//import org.apache.el.stream.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;//Model: gets input from controller & renders to appropriate view
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;//Model: gets input from controller & renders to appropriate view
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import java.util.Optional;
-import com.example.bookbackend.model.SyllabusUnit;
-import com.example.bookbackend.repository.unitrepo;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@CrossOrigin(origins = "http://localhost:8080")
+import com.example.bookbackend.model.SyllabusUnit;
+import com.example.bookbackend.repository.unitrepo;
+import com.example.bookbackend.service.UnitServiceImpl;
+
+@CrossOrigin(origins = "http://localhost:4200")
 @Controller
-@RequestMapping("/api")
+@RequestMapping("/units")
 
 public class UnitController {
     private UnitController() {
@@ -33,104 +31,73 @@ public class UnitController {
     @Autowired
     unitrepo UnitRepository;
 
-    @GetMapping("/hello")
-    public String sayHello(Model model) {
-        System.out.println("Homepg");
-        return "hello";
-    }
+    @Autowired
+    UnitServiceImpl unit_service;
 
-    @GetMapping("/units")
-    public ResponseEntity<List<SyllabusUnit>> getAllUnits(@RequestParam(required = false) String title) {
-        try {
-            List<SyllabusUnit> units = new ArrayList<SyllabusUnit>();
-            System.out.println(units);
-            if (title == null)
-                UnitRepository.findAll().forEach(units::add);// add data from db to units list in a loop
-            else
-                UnitRepository.findByTitle(title).forEach(units::add);// add data from db to units list in a loop
+    
 
-            if (units.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @GetMapping("/all-units")
+    public ResponseEntity<List<SyllabusUnit>> getAllUnits() {
+            List<SyllabusUnit> all_units=unit_service.getAllUnits();
+            System.out.println(all_units);
+            if (all_units.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
             }
 
-            return new ResponseEntity<>(units, HttpStatus.OK);// ResponseEntity: the body type, type of the response
+            return ResponseEntity.status(200).body(all_units);// ResponseEntity: the body type, type of the response
                                                               // headers, and the status type.
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        
     }
 
-    @GetMapping("/units/{id}")
-    public ResponseEntity<SyllabusUnit> getTutorialById(@PathVariable("id") long id) {
-        Optional<SyllabusUnit> unitdata = UnitRepository.findById(id);
+    @GetMapping("/get-unit-by-title/{title}")
+    public ResponseEntity<SyllabusUnit> getUnitByTitle(@PathVariable("title") String title) {
+        SyllabusUnit unitdata = unit_service.getUnitByTitle(title);
 
-        if (unitdata.isPresent()) {
+        if (unitdata!=null) {
 
-            return new ResponseEntity<>(unitdata.get(), HttpStatus.OK);
+            return new ResponseEntity<>(unitdata, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
-    @PostMapping("/units")
+    @PostMapping("/create_units")
     public ResponseEntity<SyllabusUnit> createunit(@RequestBody SyllabusUnit unit) {
-        try {
-            SyllabusUnit _unit = UnitRepository
-                    .save(new SyllabusUnit(unit.getTitle(), unit.getDescription(), false));
-            return new ResponseEntity<>(_unit, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        
+        
+            SyllabusUnit new_unit = unit_service.createSyllabusUnit(unit);
+                    
+            return ResponseEntity.status(200).body(new_unit);
+        
     }
 
-    @PutMapping("/units/{id}")
-    public ResponseEntity<SyllabusUnit> updateUnit(@PathVariable("id") long id, @RequestBody SyllabusUnit unit) {
-        Optional<SyllabusUnit> unitdata = UnitRepository.findById(id);
-
-        if (unitdata.isPresent()) {
-            SyllabusUnit _unit = unitdata.get();
-            _unit.setTitle(unit.getTitle());
-            _unit.setDescription(unit.getDescription());
-            _unit.setPublished(unit.isTaught());
-            return new ResponseEntity<>(UnitRepository.save(_unit), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @PutMapping("/update-units")
+    public ResponseEntity<SyllabusUnit> updateUnit( @RequestBody SyllabusUnit unit) {
+        SyllabusUnit updated_unitdata = unit_service.updateUnit(unit);
+        return ResponseEntity.ok(updated_unitdata);
+        
     }
 
-    @DeleteMapping("/units/{id}")
-    public ResponseEntity<HttpStatus> deleteUnit(@PathVariable("id") long id) {
-        try {
-            UnitRepository.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @DeleteMapping("/delete-unit/{id}")
+    public ResponseEntity<Void> deleteUnit(@PathVariable("id") int id) {
+        if (unit_service.deleteUnitById(id)){
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
-    @DeleteMapping("/units")
-    public ResponseEntity<HttpStatus> deleteAllUnits() {
-        try {
-            UnitRepository.deleteAll();
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    
 
-    }
+    @GetMapping("/get-unit-by-id/{id}")
+    public ResponseEntity<SyllabusUnit> findById(@PathVariable int id) {
+        
+            SyllabusUnit unit = unit_service.getUnitById(id);
 
-    @GetMapping("/units/taught")
-    public ResponseEntity<List<SyllabusUnit>> findByTaught() {
-        try {
-            List<SyllabusUnit> units = UnitRepository.findByTaught(true);
-
-            if (units.isEmpty()) {
+            if (unit==null) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return new ResponseEntity<>(units, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            return new ResponseEntity<>(unit, HttpStatus.OK);
+        
     }
 
 }

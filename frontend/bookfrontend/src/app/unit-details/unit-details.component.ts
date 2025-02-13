@@ -1,97 +1,76 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { SyllabusUnit } from '../models/unit.model';
-
-//import { UnitService } from '../services/unit.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UnitService } from '../services/unit.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-unit-details',
   standalone: true,
-  imports: [],
+  imports: [MatIconModule,MatFormFieldModule,FormsModule,ReactiveFormsModule,MatInputModule],
   templateUrl:'./unit-details.component.html',
   styleUrl: './unit-details.component.scss'
 })
-export class UnitDetailsComponent{}
-/*
-export class UnitDetailsComponent implements OnInit {
-  @Input() viewMode = false;
-
-  @Input() currentSyllabusUnit: SyllabusUnit = {
-    title: '',
-    description: '',
+export class UnitDetailsComponent{
+  unitId !:number;
+  unitForm !: FormGroup;
+  unit!: SyllabusUnit;
+  isEditable = {
+    title: false,
+    description: false,
     taught: false
   };
 
-  message = '';
-
   constructor(
-    private unitService: UnitService,
-    private route: ActivatedRoute,
-    private router: Router
-  ) {}
+      private fb: FormBuilder,
+      private unit_service:UnitService,
+      private router: Router,
+      private route: ActivatedRoute,
+    ) {
+      this.unitForm = this.fb.group({
+      id: [{ value: '', disabled: true }],
+      title: [''],
+      description: [''],
+      taught: ['']
+    });}
 
-  ngOnInit(): void {
-    if (!this.viewMode) {
-      this.message = '';
-      this.getSyllabusUnit(this.route.snapshot.params['id']);
-    }
-  }
-
-  getSyllabusUnit(id: string): void {
-    this.unitService.get(id).subscribe({
-      next: (data) => {
-        this.currentSyllabusUnit = data;
-        console.log(data);
-      },
-      error: (e) => console.error(e)
-    });
-  }
-
-  updateTaught(status: boolean): void {
-    const data = {
-      title: this.currentSyllabusUnit.title,
-      description: this.currentSyllabusUnit.description,
-      taught: status
-    };
-
-    this.message = '';
-
-    this.unitService.update(this.currentSyllabusUnit.id, data).subscribe({
-      next: (res) => {
-        console.log(res);
-        this.currentSyllabusUnit.taught = status;
-        this.message = res.message
-          ? res.message
-          : 'The status was updated successfully!';
-      },
-      error: (e) => console.error(e)
-    });
-  }
-
-  updateSyllabusUnit(): void {
-    this.message = '';
-
-    this.unitService
-      .update(this.currentSyllabusUnit.id, this.currentSyllabusUnit)
-      .subscribe({
-        next: (res) => {
-          console.log(res);
-          this.message = res.message
-            ? res.message
-            : 'This tutorial was updated successfully!';
-        },
-        error: (e) => console.error(e)
+    ngOnInit() {
+      this.unitId = this.route.snapshot.params['id'];
+      this.unit_service.getUnitById(this.unitId).subscribe((unit: SyllabusUnit) => {
+        this.unitForm.patchValue(unit);// Populate the form
       });
-  }
+    }
 
-  deleteTutorial(): void {
-    this.unitService.delete(this.currentSyllabusUnit.id).subscribe({
-      next: (res) => {
-        console.log(res);
-        this.router.navigate(['/units']);
-      },
-      error: (e) => console.error(e)
-    });
-  }
+    toggleEdit(field: 'title' | 'description' | 'taught') {
+      this.isEditable[field] = !this.isEditable[field];
+      const control = this.unitForm.get(field);
+      if (control) {
+        if (this.isEditable[field]) {
+          control.enable();
+        } else {
+          control.disable();
+        }
+      }
+    }
+
+    onSave(): void {
+      if (this.unitForm.valid) {
+         const updatedUnit: SyllabusUnit = {
+              ...this.unit, //keep the previous values
+              ...this.unitForm.getRawValue() //overwrite with updated form values
+          };
+        this.unit_service.updateUnit(this.unitId,updatedUnit).subscribe({
+          next: () => {
+            this.router.navigate(['/all-units']); // Navigate back to the list
+          },
+          error: (error) => {
+            console.error('Error updating unit:', error);
+            // Handle error (e.g., display an error message)
+          }
+        });
+      }
+    }
 }
-*/

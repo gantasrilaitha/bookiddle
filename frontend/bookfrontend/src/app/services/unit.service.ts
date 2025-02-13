@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SyllabusUnit } from '../models/unit.model';
 
-const baseUrl = 'http://localhost:8080/api/units';
+const baseUrl = 'http://localhost:8084/units/';
 
 @Injectable({
   providedIn: 'root',
@@ -11,32 +11,30 @@ const baseUrl = 'http://localhost:8080/api/units';
 export class UnitService {
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<SyllabusUnit[]> 
+  getAllUnits(): Observable<SyllabusUnit[]> 
   {
-    return this.http.get<SyllabusUnit[]>(baseUrl);
+    return this.http.get<SyllabusUnit[]>(`${baseUrl}all-units`);
   }
 
-  get(id: any): Observable<SyllabusUnit> {
-    return this.http.get<SyllabusUnit>(`${baseUrl}/${id}`);
+  getUnitById(id: number): Observable<SyllabusUnit> {
+    return this.http.get<SyllabusUnit>(`${baseUrl}get-unit-by-id/${id}`);
+  }
+  getUnitByTitle(title: String): Observable<SyllabusUnit> {
+    return this.http.get<SyllabusUnit>(`${baseUrl}get-unit-by-title/${title}`);
   }
 
   create(data: any): Observable<any> {
-    return this.http.post(baseUrl, data);
+    return this.http.post(`${baseUrl}create_units`, data);
   }
 
-  update(id: any, data: any): Observable<any> {
-    return this.http.put(`${baseUrl}/${id}`, data);
+  updateUnit(id: number, unit: SyllabusUnit): Observable<void> {
+    return this.http.put<void>(`${baseUrl}update-units`, unit);
   }
 
-  delete(id: any): Observable<any> {
-    return this.http.delete(`${baseUrl}/${id}`);
+  deleteUnitById(id: any): Observable<any> {
+    return this.http.delete(`${baseUrl}delete-unit/${id}`);
   }
 
-  deleteAll(): Observable<any> {
-    return this.http.delete(baseUrl);
-  }
-
-  findByTitle(title: any): Observable<SyllabusUnit[]> {
-    return this.http.get<SyllabusUnit[]>(`${baseUrl}?title=${title}`);
-  }
-}
+  
+ 
+ }

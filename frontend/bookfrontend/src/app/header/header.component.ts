@@ -8,6 +8,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-header',
   standalone:true,
@@ -15,11 +17,16 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './header.component.html',
   
   styleUrls: ['./header.component.scss'],
-  imports:[]
+  imports:[MatButtonModule,]
   
 })
 export class HeaderComponent {
-  // Define categories
-  //categories = ['Electronics', 'Fashion', 'Books', 'Furniture', 'Toys'];
-  //appearance = inject(InputsAppearanceService).appearance;
+  constructor(private router: Router) {}
+
+  navigateToNewUnit() {
+    this.router.navigate(['/new-unit']);
+  }
+  navigateToAllUnits() {
+    this.router.navigate(['/all-units']);
+  }
 }

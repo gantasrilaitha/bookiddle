@@ -1,4 +1,41 @@
-.submit-form {
-    max-width: 400px;
-    margin: auto;
-  }
+.unit-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid rgb(114, 240, 114);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: lightseagreen;
+}
+
+.unit-form mat-form-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.unit-form button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  background-color: green;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.unit-form button:hover {
+  background-color: #45a049;
+}
+
+.example-button-row {
+  display: table-cell;
+  max-width: 600px;
+}
+
+.example-button-row .mat-mdc-button-base {
+  margin: 8px 8px 8px 0;
+}

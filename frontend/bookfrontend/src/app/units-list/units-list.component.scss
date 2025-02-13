@@ -1,5 +1,16 @@
-.list {
-    text-align: left;
-    max-width: 750px;
-    margin: auto;
-  }
+/* Structure */
+table {
+  width: 100%;
+}
+
+.mat-mdc-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+#heading {
+  text-align: center;
+  margin-top: 50px;
+  font-family: 'Courier New', Courier, monospace;
+  color:green;
+  background-color: lightgoldenrodyellow;
+}
